@@ -1,4 +1,4 @@
-package com.example.lenfer
+package com.example.enfer
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,17 +13,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.enfer.ui.theme.EnferTheme
 import kotlin.random.Random
 
@@ -33,8 +40,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             EnferTheme {
                 grille()
-
-
             }
         }
     }
@@ -42,17 +47,15 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-
-
 fun grille() {
-    var textColonnes: Int? by remember { mutableStateOf(7) }
-    var textLignes: Int? by remember { mutableStateOf(5) }
+    var textColonnes: Int? by remember { mutableStateOf(2) }
+    var textLignes: Int? by remember { mutableStateOf(2) }
 
-    val safeTextColonnes by remember(textColonnes) {
-        mutableIntStateOf(textColonnes ?: 1)
+    var safeTextColonnes by remember {
+        mutableIntStateOf(2)
     }
-    val safeTextLignes by remember(textLignes) {
-        mutableIntStateOf(textLignes ?: 1)
+    var safeTextLignes by remember {
+        mutableIntStateOf(2)
     }
 
     Column(
@@ -70,22 +73,7 @@ fun grille() {
                         .weight(1f)
                 ) {
                     (1..safeTextColonnes).forEach {
-                        var clik by remember { mutableStateOf(Color.White) }
-                        Box(
-                            Modifier
-                                .fillMaxHeight()
-                                .weight(1f)
-                                .clickable {
-                                    clik = Color(
-                                        Random.nextInt(256),
-                                        Random.nextInt(256),
-                                        Random.nextInt(256),
-                                        255
-                                    )
-                                }
-                                .background(clik)
-                                .border(1.dp, Color.Black)
-                        )
+                        Cell(modifier = Modifier.weight(1f))
 
                     }
 
@@ -98,7 +86,6 @@ fun grille() {
 
 
         Column(
-            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.5f)
@@ -110,22 +97,24 @@ fun grille() {
 
             ) {
                 Column(
-                    Modifier
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
                 ) {
-                    Text(
-                        text = "Nombre de colonnes",
-                        Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    )
 
 
-                    TextField(
+
+                    OutlinedTextField(
+                        label = {
+                            Text(
+                                text = "Nombre de colonnes",
+                                fontSize = 15.sp
+                            )
+                        },
                         modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
+                            .fillMaxWidth(0.75f),
                         value = textColonnes?.toString() ?: "",
                         onValueChange = {
                             textColonnes = it.toIntOrNull()
@@ -134,29 +123,32 @@ fun grille() {
                         placeholder = {
                             Text("Entrer le nombre de colonnes")
                         },
+                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 
-                        )
+                    )
 
 
                 }
 
                 Column(
-                    Modifier
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
                 ) {
-                    Text(
-                        text = "Nombre de lignes",
-                        Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    )
 
 
-                    TextField(
+                    OutlinedTextField(
+                        label = {
+                            Text(
+                                "Nombre de lignes",
+                                fontSize = 15.sp
+                            )
+                        },
                         modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
+                            .fillMaxWidth(0.75f),
                         value = textLignes?.toString() ?: "",
                         onValueChange = {
                             textLignes = it.toIntOrNull()
@@ -164,8 +156,11 @@ fun grille() {
                         placeholder = {
                             Text("Entrer le nombre de lignes")
                         },
+                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 
-                        )
+
+                    )
 
 
                 }
@@ -175,21 +170,47 @@ fun grille() {
 
 
         }
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxHeight(1f)
+                .fillMaxWidth()
+        ) {
+            OutlinedButton(onClick = {
+                safeTextColonnes = textColonnes ?: 1
+                safeTextLignes = textLignes ?: 1
+                Modifier.background(Color.DarkGray)
+            })
+            {
+                Text(text = "Rafraîchir")
+            }
+
+        }
 
     }
 
 }
 
 @Composable
-
-fun Cell() {
-    var nbClic : Int by remember { mutableStateOf(0) }
-    val backgroundColor by remember(nbClic){
+fun Cell(modifier: Modifier = Modifier) {
+    var nbClic: Int by remember { mutableStateOf(0) }
+    val backgroundColor by remember(nbClic) {
         mutableStateOf(
-            if(nbClic % 2 == 0) Color.White else randomColor()
+            if (nbClic % 2 == 0) Color.White else randomColor()
         )
     }
+    Box(modifier = modifier
+        .fillMaxHeight()
+        .border(1.dp, Color.Black)
+        .clickable {
+            nbClic++
+        }
+        .background(backgroundColor)
+    )
+
 }
 
 fun randomColor() = Color(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256), 255)
+
 
