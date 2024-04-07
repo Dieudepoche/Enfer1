@@ -4,10 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -29,8 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.enfer.ui.composables.Cellule
 import com.example.enfer.ui.theme.EnferTheme
 import kotlin.random.Random
 
@@ -73,7 +70,7 @@ fun grille() {
                         .weight(1f)
                 ) {
                     (1..safeTextColonnes).forEach {
-                        Cell(modifier = Modifier.weight(1f))
+                        Cellule(modifier = Modifier.weight(1f))
 
                     }
 
@@ -192,24 +189,6 @@ fun grille() {
 
 }
 
-@Composable
-fun Cell(modifier: Modifier = Modifier) {
-    var nbClic: Int by remember { mutableStateOf(0) }
-    val backgroundColor by remember(nbClic) {
-        mutableStateOf(
-            if (nbClic % 2 == 0) Color.White else randomColor()
-        )
-    }
-    Box(modifier = modifier
-        .fillMaxHeight()
-        .border(1.dp, Color.Black)
-        .clickable {
-            nbClic++
-        }
-        .background(backgroundColor)
-    )
-
-}
 
 fun randomColor() = Color(Random.nextInt(256), Random.nextInt(256), Random.nextInt(256), 255)
 
